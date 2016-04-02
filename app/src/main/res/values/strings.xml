@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Musicians (Yandex)</string>
+
+    <string name="missing_text">Cant load data</string>
+    <string name="no_genres">No genres for this singer</string>
+    <string name="album_count_ends_with_1">\u00A0альбом,\u00A0</string>
+    <string name="album_count_ends_with_2">\u00A0альбома,\u00A0</string>
+    <string name="album_count_ends_with_5">\u00A0альбомов,\u00A0</string>
+    <string name="song_count_ends_with_1">\u00A0песня</string>
+    <string name="song_count_ends_with_2">\u00A0песни</string>
+    <string name="song_count_ends_with_5">\u00A0песен</string>
+</resources>
