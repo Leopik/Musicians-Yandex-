@@ -3,12 +3,17 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:id="@+id/MusicianSmallPhoto"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:scaleType="centerInside"
+
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:layout_margin="15dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -16,7 +21,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:id="@+id/MusicianName"
-        android:layout_toRightOf="@+id/MusicianSmallPhoto" />
+        android:layout_alignTop="@+id/MusicianSmallPhoto"
+        android:layout_toRightOf="@+id/MusicianSmallPhoto"
+        android:layout_toEndOf="@+id/MusicianSmallPhoto"
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,8 +33,9 @@
         android:text="Medium Text"
         android:id="@+id/MusicianGenres"
         android:layout_below="@+id/MusicianName"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_toRightOf="@+id/MusicianSmallPhoto"
+        android:layout_toEndOf="@+id/MusicianSmallPhoto"
+        android:layout_marginTop="5dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,9 +43,9 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
         android:id="@+id/MusicianAlbums"
-        android:layout_below="@+id/MusicianGenres"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignBottom="@+id/MusicianSmallPhoto"
+        android:layout_toRightOf="@+id/MusicianSmallPhoto"
+        android:layout_toEndOf="@+id/MusicianSmallPhoto" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,7 +53,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
         android:id="@+id/MusicianSongs"
-        android:layout_below="@+id/MusicianGenres"
+        android:layout_alignBottom="@+id/MusicianSmallPhoto"
         android:layout_toRightOf="@+id/MusicianAlbums"
         android:layout_toEndOf="@+id/MusicianAlbums" />
 

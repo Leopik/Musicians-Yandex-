@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 
 public class Musician {
+
     private int id;
     private String name;
     private ArrayList<String> genres = new ArrayList<>();
@@ -20,24 +21,29 @@ public class Musician {
     private String description;
 
     // Getters
+    public int getId(){
+        return id;
+    }
     public String getName() {
         return name;
     }
-
     public ArrayList<String> getGenres() {
         return genres;
     }
-
     public int getTracks() {
         return tracks;
     }
-
     public int getAlbums() {
         return albums;
     }
-
     public String getLinkToSmallPhoto() {
         return linkToSmallPhoto;
+    }
+    public String getLinkToBigPhoto(){
+        return linkToBigPhoto;
+    }
+    public String getDescription(){
+        return description;
     }
 
     //Converts JSON array of musicians to ArrayList
@@ -53,12 +59,16 @@ public class Musician {
         return musicians;
     }
 
+    // Creator
     public Musician(JSONObject object) {
         try {
+            id = object.getInt("id");
             name = object.getString("name");
             tracks = object.getInt("tracks");
             albums = object.getInt("albums");
             linkToSmallPhoto = object.getJSONObject("cover").getString("small");
+            linkToBigPhoto = object.getJSONObject("cover").getString("big");
+            description = object.getString("description");
 
             // Makes arraylist of genres from JSON array
             JSONArray jsonGenres = object.getJSONArray("genres");

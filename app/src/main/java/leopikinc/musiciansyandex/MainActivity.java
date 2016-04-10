@@ -5,71 +5,65 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import org.apache.http.client.HttpClient;
+
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 public class MainActivity extends ListActivity {
 
     ArrayList<Musician> arrayOfMusicians;
     Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mainlayout);
         context = this;
-        new ProcessJSON().execute();
+        String link = "http://download.cdn.yandex.net/mobilization-2016/artists.json";
+//      String link = "https://vk.com/doc13725705_437399881";
+        new ProcessJSON(link).execute();
     }
 
-    private class ProcessJSON extends AsyncTask<String, Void, String>{
+    // Class which asynchronously downloads JSONArray and as soon as it finishes is creates and sets ListAdapter
+    private class ProcessJSON extends AsyncTask<Void, Void, String>{
 
-        String link = "http://download.cdn.yandex.net/mobilization-2016/artists.json";
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        String json = "";
+        String url;
+
+        public ProcessJSON(String url) {
+            this.url = url;
+        }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(Void... params) {
             try {
-                URL url = new URL(link);
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
+                InputStream inputStream = new URL(url).openStream();
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
+                    builder.append(line);
                 }
 
-                json = buffer.toString();
-
+                String json = builder.toString();
+                return json;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return json;
+            return null;
         }
 
         @Override
         protected void onPostExecute(String strJson){
             super.onPostExecute(strJson);
             try {
-                JSONArray jsonArray = new JSONArray(json);
+                JSONArray jsonArray = new JSONArray(strJson);
                 arrayOfMusicians = Musician.fromJson(jsonArray);
                 MusicianAdapter adapter = new MusicianAdapter(context, arrayOfMusicians);
                 setListAdapter(adapter);
