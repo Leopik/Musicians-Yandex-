@@ -20,8 +20,8 @@ public class ImageDownloader {
     Bitmap mPlaceHolderBitmap;
 
     // Creator
-    public ImageDownloader(Resources res){
-        mPlaceHolderBitmap = BitmapFactory.decodeResource(res, R.drawable.test);
+    public ImageDownloader(Resources res, int resId){
+        mPlaceHolderBitmap = BitmapFactory.decodeResource(res, resId);
     }
 
     // Launches new ImageLoadTask if necessary
@@ -90,14 +90,13 @@ public class ImageDownloader {
 
         @Override
         protected Bitmap doInBackground(Void... params) {
-            try {
-                InputStream input = new URL(url).openStream();
-                Bitmap finalBitmap = BitmapFactory.decodeStream(input);
-                return finalBitmap;
-            } catch (Exception e) {
-                Log.d("TAG", "exception in doInBackground " + url);
-                e.printStackTrace();
-            }
+                try {
+                    InputStream input = new URL(url).openStream();
+                    Bitmap finalBitmap = BitmapFactory.decodeStream(input);
+                    return finalBitmap;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             return null;
         }
 
@@ -105,7 +104,6 @@ public class ImageDownloader {
         protected void onPostExecute(Bitmap result) {
             if (isCancelled()) {
                 result = null;
-                Log.d("TAG","was cancelled "+url);
             }
 
             if (imageViewWeakReference != null && result != null) {

@@ -23,47 +23,64 @@ import java.util.ArrayList;
 
 public class MusicianAdapter extends ArrayAdapter<Musician> {
 
-    private final ImageDownloader imageDownloader = new ImageDownloader(getContext().getResources());
+    private final ImageDownloader imageDownloader = new ImageDownloader(getContext().getResources(), R.drawable.loading_image);
 
     // Creator
     public MusicianAdapter(Context context, ArrayList<Musician> musicians){
         super(context,0,musicians);
     }
 
+    // ViewHolder for better performance
+    static class ViewHolder {
+        TextView musName;
+        TextView musGenres;
+        TextView musAlbums;
+        TextView musTracks;
+        ImageView musSmallPhoto;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Musician musician = getItem(position);
-
+        ViewHolder holder;
         //Checks whether it's new view or reused one if new - creates it
         if (convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.single_item_layout,parent,false);
+
+            // Gets access to views
+            holder = new ViewHolder();
+            holder.musName = (TextView) convertView.findViewById(R.id.MusicianName);
+            holder.musGenres = (TextView) convertView.findViewById(R.id.MusicianGenres);
+            holder.musAlbums = (TextView) convertView.findViewById(R.id.MusicianAlbums);
+            holder.musTracks = (TextView) convertView.findViewById(R.id.MusicianSongs);
+            holder.musSmallPhoto = (ImageView) convertView.findViewById(R.id.MusicianSmallPhoto);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        // Gets access to views
-        TextView musName = (TextView) convertView.findViewById(R.id.MusicianName);
-        TextView musGenres = (TextView) convertView.findViewById(R.id.MusicianGenres);
-        TextView musAlbums = (TextView) convertView.findViewById(R.id.MusicianAlbums);
-        TextView musTracks = (TextView) convertView.findViewById(R.id.MusicianSongs);
-        ImageView musSmallPhoto = (ImageView) convertView.findViewById(R.id.MusicianSmallPhoto);
+        Musician musician = getItem(position);
+        if (musician != null) {
 
-        imageDownloader.loadBitmap(musician.getLinkToSmallPhoto(), musSmallPhoto);
-        musName.setText(musician.getName());
+            imageDownloader.loadBitmap(musician.getLinkToSmallPhoto(), holder.musSmallPhoto);
 
-        // Creates text from arraylist of genres
-        if (musician.getGenres().size() != 0) {
-            musGenres.setText(musician.getGenres().get(0));
-            for (int i = 1; i < musician.getGenres().size(); i++) {
-                musGenres.setText(String.format(convertView.getResources().getString(R.string.concatenator_for_genres),
-                        musGenres.getText(),
-                        musician.getGenres().get(i)));
-            }
-        } else
-            musGenres.setText(R.string.no_genres);
+            holder.musName.setText(musician.getName());
 
-        // Makes correct ending for word
-        musAlbums.setText(convertView.getResources().getQuantityString(R.plurals.album_count, musician.getAlbums(), musician.getAlbums()));
-        musTracks.setText(convertView.getResources().getQuantityString(R.plurals.song_count, musician.getTracks(), musician.getTracks()));
+            // Creates text from arraylist of genres
+            if (musician.getGenres().size() != 0) {
+                holder.musGenres.setText(musician.getGenres().get(0));
+                for (int i = 1; i < musician.getGenres().size(); i++) {
+                    holder.musGenres.setText(String.format(convertView.getResources().getString(R.string.concatenator_for_genres),
+                            holder.musGenres.getText(),
+                            musician.getGenres().get(i)));
+                }
+            } else
+                holder.musGenres.setText(R.string.no_genres);
+
+            // Makes correct ending for word
+            String delimeter = ",\u00A0";
+            holder.musAlbums.setText(convertView.getResources().getQuantityString(R.plurals.album_count, musician.getAlbums(), musician.getAlbums(), delimeter));
+            holder.musTracks.setText(convertView.getResources().getQuantityString(R.plurals.song_count, musician.getTracks(), musician.getTracks()));
+        }
 
         return convertView;
     }

@@ -1,13 +1,17 @@
 <resources>
     <string name="app_name">Musicians (Yandex)</string>
 
-    <string name="missing_text">Нет данных</string>
+    <string name="loading_text">Загрузка</string>
     <string name="no_genres">Не найдено жанров</string>
     <string name="concatenator_for_genres">%1$s,\u00A0%2$s</string>
+    <string name="biography_string_text">Биография</string>
+    <string name="toolbar_in_main_text">Исполнители</string>
+    <string name="loading_failed">Не удалось загрузить список исполнителей</string>
+
     <plurals name="album_count">
-        <item quantity="one">%d\u00A0альбом,\u00A0</item>
-        <item quantity="few">%d\u00A0альбома,\u00A0</item>
-        <item quantity="other">%d\u00A0альбомов,\u00A0</item>
+        <item quantity="one">%1$d\u00A0альбом%2$s</item>
+        <item quantity="few">%1$d\u00A0альбома%2$s</item>
+        <item quantity="other">%1$d\u00A0альбомов%2$s</item>
     </plurals>
     <plurals name="song_count">
         <item quantity="one">%d\u00A0песня\u00A0</item>
