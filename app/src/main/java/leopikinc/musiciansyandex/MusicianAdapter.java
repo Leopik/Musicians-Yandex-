@@ -1,6 +1,12 @@
 package leopikinc.musiciansyandex;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,84 +15,78 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 
 public class MusicianAdapter extends ArrayAdapter<Musician> {
+
+    private final ImageDownloader imageDownloader;
+
+    Context context;
+
+    // Creator
     public MusicianAdapter(Context context, ArrayList<Musician> musicians){
         super(context,0,musicians);
+        imageDownloader = new ImageDownloader(getContext().getResources(), R.drawable.loading_image, context);
+    }
+
+    // ViewHolder for better performance
+    static class ViewHolder {
+        TextView musName;
+        TextView musGenres;
+        TextView musAlbums;
+        TextView musTracks;
+        ImageView musSmallPhoto;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Musician musician = getItem(position);
-
-        //Checks wheter it's new view or reused onem if new - create's it
+        ViewHolder holder;
+        //Checks whether it's new view or reused one if new - creates it
         if (convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.single_item_layout,parent,false);
+
+            // Gets access to views
+            holder = new ViewHolder();
+            holder.musName = (TextView) convertView.findViewById(R.id.MusicianName);
+            holder.musGenres = (TextView) convertView.findViewById(R.id.MusicianGenres);
+            holder.musAlbums = (TextView) convertView.findViewById(R.id.MusicianAlbums);
+            holder.musTracks = (TextView) convertView.findViewById(R.id.MusicianSongs);
+            holder.musSmallPhoto = (ImageView) convertView.findViewById(R.id.MusicianSmallPhoto);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        TextView musName = (TextView) convertView.findViewById(R.id.MusicianName);
-        TextView musGenres = (TextView) convertView.findViewById(R.id.MusicianGenres);
-        TextView musAlbums = (TextView) convertView.findViewById(R.id.MusicianAlbums);
-        TextView musTracks = (TextView) convertView.findViewById(R.id.MusicianSongs);
-        ImageView musSmallPhoto = (ImageView) convertView.findViewById(R.id.MusicianSmallPhoto);
+        Musician musician = getItem(position);
+        if (musician != null) {
 
-        musName.setText(musician.getName());
+            imageDownloader.loadBitmap(musician.getLinkToSmallPhoto(), holder.musSmallPhoto);
 
-        // Creates text from arraylist of genres
-        if (musician.getGenres().size() != 0) {
-            musGenres.setText(musician.getGenres().get(0));
-            for (int i = 1; i < musician.getGenres().size(); i++) {
-                musGenres.setText(musGenres.getText() + ", " + musician.getGenres().get(i));
-            }
-        } else
-            musGenres.setText(R.string.no_genres);
+            holder.musName.setText(musician.getName());
 
-        //Gets last digit of number and makes correct ending for word
-        switch (musician.getAlbums()%10){
-            case 1:
-                if (musician.getAlbums() % 100 == 11)
-                    musAlbums.setText(Integer.toString(musician.getAlbums()) + convertView.getResources().getString(R.string.album_count_ends_with_5));
-                else
-                    musAlbums.setText(Integer.toString(musician.getAlbums()) + convertView.getResources().getString(R.string.album_count_ends_with_1));
-                break;
-            case 2:
-            case 3:
-            case 4:
-                if (musician.getAlbums() % 100 == 12 || musician.getAlbums() % 100 == 13 || musician.getAlbums() % 100 == 14)
-                    musAlbums.setText(Integer.toString(musician.getAlbums()) + convertView.getResources().getString(R.string.album_count_ends_with_5));
-                else
-                    musAlbums.setText(Integer.toString(musician.getAlbums()) + convertView.getResources().getString(R.string.album_count_ends_with_2));
-                break;
-            default:
-                musAlbums.setText(Integer.toString(musician.getAlbums()) + convertView.getResources().getString(R.string.album_count_ends_with_5));
-                break;
-        }
+            // Creates text from arraylist of genres
+            if (musician.getGenres().size() != 0) {
+                holder.musGenres.setText(musician.getGenres().get(0));
+                for (int i = 1; i < musician.getGenres().size(); i++) {
+                    holder.musGenres.setText(String.format(convertView.getResources().getString(R.string.concatenator_for_genres),
+                            holder.musGenres.getText(),
+                            musician.getGenres().get(i)));
+                }
+            } else
+                holder.musGenres.setText(R.string.no_genres);
 
-        //Gets last digit of number and makes correct ending for word
-        switch (musician.getTracks() - musician.getTracks()%10){
-            case 1:
-                if (musician.getTracks() % 100 == 11)
-                    musTracks.setText(Integer.toString(musician.getTracks()) + convertView.getResources().getString(R.string.song_count_ends_with_5));
-                else
-                    musTracks.setText(Integer.toString(musician.getTracks()) + convertView.getResources().getString(R.string.song_count_ends_with_1));
-                break;
-            case 2:
-            case 3:
-            case 4:
-                if (musician.getTracks() % 100 == 12 || musician.getTracks() % 100 == 13 || musician.getTracks() % 100 == 14)
-                    musTracks.setText(Integer.toString(musician.getTracks()) + convertView.getResources().getString(R.string.song_count_ends_with_5));
-                else
-                    musTracks.setText(Integer.toString(musician.getTracks()) + convertView.getResources().getString(R.string.song_count_ends_with_2));
-                break;
-            default:
-                musTracks.setText(Integer.toString(musician.getTracks()) + convertView.getResources().getString(R.string.song_count_ends_with_5));
-                break;
+            // Makes correct ending for word
+            String delimeter = ",\u00A0";
+            holder.musAlbums.setText(convertView.getResources().getQuantityString(R.plurals.album_count, musician.getAlbums(), musician.getAlbums(), delimeter));
+            holder.musTracks.setText(convertView.getResources().getQuantityString(R.plurals.song_count, musician.getTracks(), musician.getTracks()));
         }
 
         return convertView;
     }
+
 }
