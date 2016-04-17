@@ -23,11 +23,14 @@ import java.util.ArrayList;
 
 public class MusicianAdapter extends ArrayAdapter<Musician> {
 
-    private final ImageDownloader imageDownloader = new ImageDownloader(getContext().getResources(), R.drawable.loading_image);
+    private final ImageDownloader imageDownloader;
+
+    Context context;
 
     // Creator
     public MusicianAdapter(Context context, ArrayList<Musician> musicians){
         super(context,0,musicians);
+        imageDownloader = new ImageDownloader(getContext().getResources(), R.drawable.loading_image, context);
     }
 
     // ViewHolder for better performance
@@ -53,6 +56,7 @@ public class MusicianAdapter extends ArrayAdapter<Musician> {
             holder.musAlbums = (TextView) convertView.findViewById(R.id.MusicianAlbums);
             holder.musTracks = (TextView) convertView.findViewById(R.id.MusicianSongs);
             holder.musSmallPhoto = (ImageView) convertView.findViewById(R.id.MusicianSmallPhoto);
+
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();

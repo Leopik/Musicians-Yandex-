@@ -1,13 +1,12 @@
 package leopikinc.musiciansyandex;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.util.LruCache;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -32,17 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
     private final String PREFERENCE_JSON_NAME= "cachedJSON";
     ArrayList<Musician> arrayOfMusicians;
-    Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mainlayout);
-
-        context = this;
-        String link = "http://download.cdn.yandex.net/mobilization-2016/artists.json";
-        ProcessJSON processJSON = new ProcessJSON(link);
-        processJSON.execute();
 
         // Getting toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_in_main);
@@ -51,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null)
             actionBar.setTitle(R.string.toolbar_in_main_text);
 
+        // Procees
+        String link = "http://download.cdn.yandex.net/mobilization-2016/artists.json";
+        ProcessJSON processJSON = new ProcessJSON(link);
+        processJSON.execute();
     }
 
     // Checks access to the internet
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Sets adapter
             ListView listView = (ListView) findViewById(R.id.list);
-            MusicianAdapter adapter = new MusicianAdapter(context, arrayOfMusicians);
+            MusicianAdapter adapter = new MusicianAdapter(this, arrayOfMusicians);
             listView.setAdapter(adapter);
 
             // Sets ItemClickListener
@@ -135,10 +133,10 @@ public class MainActivity extends AppCompatActivity {
 
             // If there is internet connection - update JSON
             if (isOnline()) {
+                InputStream inputStream = null;
                 try {
-
                     // Makes JSON string
-                    InputStream inputStream = new URL(url).openStream();
+                    inputStream = new URL(url).openStream();
                     StringBuilder builder = new StringBuilder();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                     String line;
@@ -156,7 +154,14 @@ public class MainActivity extends AppCompatActivity {
                     return json;
                 } catch (Exception e) {
                     e.printStackTrace();
-
+                } finally {
+                    try {
+                        if (inputStream != null){
+                            inputStream.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             return null;
@@ -174,8 +179,6 @@ public class MainActivity extends AppCompatActivity {
 }
 /**
     TODO: cache images
-    TODO: correct bitmap size
-    TODO: animation
     TODO: try recyclerview + collapsingToolbar + libraries
     TODO: handle with exception in threads?
     TODO: tests?

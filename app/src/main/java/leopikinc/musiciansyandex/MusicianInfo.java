@@ -43,7 +43,7 @@ public class MusicianInfo extends AppCompatActivity {
         bigphoto.setLayoutParams(lp);
 
         // Downloading photo
-        imageDownloader = new ImageDownloader(getResources(), R.drawable.loading_image_info);
+        imageDownloader = new ImageDownloader(getResources(), R.drawable.loading_image_info, this);
         imageDownloader.loadBitmap(musician.getLinkToBigPhoto(),bigphoto);
 
         // Creates text from arraylist of genres
