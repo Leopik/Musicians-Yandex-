@@ -95,7 +95,7 @@ public class ImageDownloader {
                 new BitmapDrawable(res, bitmap)
         });
         imageView.setImageDrawable(td);
-        int FADE_TIME = 200;
+        int FADE_TIME = 300;
         td.startTransition(FADE_TIME);
     }
 
