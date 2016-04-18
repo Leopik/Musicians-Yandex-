@@ -8,19 +8,14 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
-import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 // Downloads bitmpas, cancels not necessary tasks (cares for all downloading work)
@@ -76,7 +71,6 @@ public class ImageDownloader {
         AsyncDrawable asyncDrawable;
 
         if (bitmap != null){
-//            imageView.setImageBitmap(bitmap);
             setBitmapAndAnimate(imageView, bitmap);
         }else {
             if (cancelPotentialWork(url, imageView)) {
@@ -280,6 +274,7 @@ public class ImageDownloader {
             return imageLoadTaskWeakReference.get();
         }
     }
+
 
 }
 
